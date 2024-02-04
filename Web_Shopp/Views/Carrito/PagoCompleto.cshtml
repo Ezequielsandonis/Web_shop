@@ -1,0 +1,63 @@
+﻿
+@{
+    ViewData["Tittle"] = "Pago completo";
+}
+
+@model Pedido
+<div class="container mt-5">
+    <h2 class="mb-4">Gracias por su compra</h2>
+    <p class="lead">Pago recibido por el monto de @Model.Total.ToString("C").</p>
+    <h3 class="mt-5">Detalles del pedido</h3>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Numero de pedido</th>
+                <th>Fecha</th>
+                <th>Estado</th>
+                <th>Total</th>
+            </tr>
+        </thead>
+        <tbody>
+            <tr>
+                <td>@Model.PedidoId</td>
+                <td>@Model.Fecha</td>
+                <td>@Model.Estado</td>
+                <td>@Model.Total.ToString("C")</td>
+            </tr>
+        </tbody>
+    </table>
+
+    <h3 class="mt-5" >Detalles de los productos.</h3>
+    <table class="table table-bordered">
+        <thead>
+            <tr>
+                <th>Producto</th>
+                <th>Cantidad</th>
+                <th>Precio</th>
+                <th>subTotal</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var detallePedido in ViewBag.DetallePedidos)
+            {
+                <tr>
+                    <td>@detallePedido.Producto.Nombre</td>
+                    <td>@detallePedido.Cantidad</td>
+                    <td>@detallePedido.precio.ToString("C")</td>
+
+                    @{
+                        var subtotal = detallePedido.Cantidad * detallePedido.precio;
+                    }
+                    <td>@subtotal.ToString("C")</td>
+                </tr>
+            }
+        </tbody>
+        <tfood>
+            <tr>
+                <th colspan="3">Total:</th>
+                <td>@Model.Total.ToString("C")</td>
+            </tr>
+        </tfood>
+    </table>
+
+</div>

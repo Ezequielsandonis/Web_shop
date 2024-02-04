@@ -1,0 +1,123 @@
+﻿
+@using Web_Shop.Models.ViewModels;
+@model AvanzarLaCompraViewModel
+
+@{
+    ViewData["Tittle"] = "Carrito";
+}
+<h2>Carrito de compras</h2>
+@if (Model.Carrito.Items.Count == 0)
+{
+    <div class="alert alert-danger.info">
+        <p>No existen productos en el carrito</p>
+        <a href="/Home" class="btn btn-primary">Continuar con la compra</a>
+    </div>
+} else
+{
+    <div class="table-responsive">
+        <table class="table table-bordered table-striped">
+          <thead>
+              <tr>
+                    <th>Nombre</th>
+                    <th>Cantidad</th>
+                    <th>Precio</th>
+                    <th>Subtotal</th>
+                    <th>Acciones</th>
+              </tr>
+          </thead>
+          <tbody>
+              @foreach (var item in Model.Carrito.Items)
+                {
+                    <tr>
+                        <td>@item.Nombre</td>
+                      <td>
+                        @if (item.Cantidad<1)
+                        {
+                            <form>
+                                <div class=" alert alert-danger" role="alert">
+                                    <i class="fas fa-exclamation-circle"> Agotado</i>
+                                </div>
+                                <input  type="hidden" name="id" value="@item.ProductoId"/>
+                            </form>
+
+                        }
+                        else
+                          {
+                            <form asp-action="ActualizarCantidad" asp-controller="Carrito" method="post">
+                                <div class="input-group input-group-sm">
+                                    <input type="number" value="@item.Cantidad" name="cantidad" class="form-control" min="1"
+                                     max="@item.Producto.Stock" />
+                                    <div class="input-group-append">
+                                        <button type="submit" class="btn btn-primary"><i class="fas fa-sync-alt"></i></button>
+                                    </div>
+                                </div>
+                                <input type="hidden" name="id" value="@item.ProductoId" />
+                            </form>
+                          }
+                            
+                      </td>
+                        <td>@item.Precio</td>
+                        <td>@item.Subtotal.ToString("C")</td>
+                        <td>
+                            <form asp-action="EliminarProducto" asp-controller="Carrito" method="post">
+                                <button type="submit" class="btn btn-primary"><i class="fas fa-trash-alt"></i></button>
+                                <input type="hidden" name="id" value="@item.ProductoId" />
+                            </form>
+                        </td>
+                    </tr>
+                }
+          </tbody>
+          <tfoot>
+              <tr>
+                  <td colspan="3"></td>
+                  <td class="font.weight-bold">Total:</td>
+                  <td class="font.weight-bold">@Model.Carrito.Total.ToString("C")</td>
+              </tr>
+          </tfoot>
+        </table>
+    </div>
+
+    <div class="text-right">
+        <form asp-controller="Carrito" asp-action="VaciarCarrito" method="post">
+            <button type="submit" class="btn btn-danger"><i class="fas fa-trash-alt"></i>Vaciar el carrito</button>
+        </form>
+    </div>
+
+    <div class="text-left">
+        @if (User.Identity!=null && User.Identity.IsAuthenticated)
+        {
+            <form asp-controller="Carrito" asp-action="AvanzarLaCompra" method="post">
+                <h3>Direcciones de envío</h3>
+                @if (Model.Direcciones.Count  == 0)
+                {
+                    <p>Usuario sin direcciones de envío disponibles.</p>
+                }
+                else
+                {
+                    @foreach (var direccion in Model.Direcciones)
+                    {
+                        <div class="form-check">
+                            <input type="radio" name="direccionIdSeleccionada" class="form-check-input" value="@direccion.DirerccionId"
+                            id="@direccion.DirerccionId" for="@direccion.DirerccionId" required/>
+                            <label class="form-check-label" for="@direccion.DirerccionId">
+                                @direccion.Address,
+                                @direccion.Ciudad,
+                                @direccion.Provincia,
+                                @direccion.CodigoPostal
+                            </label>
+                        </div>
+                    }
+                    <input type="hidden" name="montoTotal" value="@Model.Carrito.Total" />
+                    <button type="submit" class="btn btn-primary btn-lg"><i class="fab fa-paypal"></i>Comprar</button>
+                }
+            </form>
+        }
+        else
+        {
+            <a class="btn btn-primary" asp-action="Login" asp-controller="Account">Para proceder con la compra, inicie sesión.</a>
+        }
+    </div>
+
+} 
+
+

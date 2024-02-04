@@ -1,0 +1,109 @@
+﻿
+@using Web_Shop.Models.ViewModels
+@model ProdcutosPaginadosViewModel
+@{
+    ViewData["Tittle"] = "Productos";
+}
+
+<div class="container">
+    <nav aria-label="breadcrumb ">
+        <ol class="breadcrumb " id="breadcrumb-container">
+        </ol>
+    </nav>
+    <div class="row mb-3">
+        <nav class="col-md-3">
+            <ul class="list-group">
+                <li class="list-group-item active">Filtrar los resultados</li>
+                <li class="list-group-item">
+                    <input type="checkbox" class="form-check-input" id="todasCheckbox" data-categoria="" checked />
+                    <label class="form-check-label" for="todasCheckbox">Todo</label>
+                </li>
+                @foreach (var categoria in ViewBag.Categorias)
+                {
+                    <li class="list-group-item">
+                        <input type="checkbox" class="form-check-input categoriaCheckbox" id="categoriaCheckbox_@categoria.CategoriaId"
+                               data-categoria="@categoria.CategoriaId"/>
+                        <label class="form-check-label" for="categoriaCheckbox_@categoria.CategoriaId">@categoria.Nombre</label>
+                    </li>
+                }
+            </ul>
+
+            <div class="d-flex mb-3">
+                <form action="@Url.Action("Productos","Home")" method="get">
+                    <button type="submit" class="btn btn-link">Ver productos</button>
+                </form>
+            </div>
+        </nav>
+
+        <main role="main" class="col-md-9 pb-3">
+            <div id="productosContainer">
+                @Html.Partial("_ProductosPartial", Model)
+            </div>
+        </main>
+
+    </div>
+</div>  
+
+@{
+    string? controllerName = Context.GetRouteValue("controller") as string;
+    string? actionName = Context.GetRouteValue("action") as string;
+}
+
+<script>
+    var controllerName = '@controllerName'
+    var actionName = '@actionName'
+</script>
+
+@section Scripts {
+    <script>
+        $(document).ready(function () {
+            $('#todasCheckbox').on('change', function () {
+                var isChecked = $(this).prop('checked');
+                $('.categoriaCheckbox').prop('checked', isChecked);
+                filtrarProductos();
+            });
+
+            $('.categoriaCheckbox').on('change', function () {
+                var allChecked = $('.categoriaCheckbox:checked').length === $('.categoriaCheckbox').length;
+                $('#todasCheckbox').prop('checked', allChecked);
+                filtrarProductos();
+            });
+
+            function filtrarProductos() {
+                var selectedCategorias = [];
+                $('.categoriaCheckbox:checked').each(function () {
+                    var categoriaId = $(this).data('categoria');
+                    selectedCategorias.push(categoriaId);
+                });
+                if (selectedCategorias.length === 0) {
+                    $('.productoItem').show();
+                } else {
+                    $('.productoItem').hide();
+                    selectedCategorias.forEach(function (categoriaId) {
+                        $('.productoItem[data-categoria="' + categoriaId + '"]').show();
+                    });
+                }
+
+                var url = '@Url.Action("Productos", "Home")';
+                var data = {
+                    pagina: @Model.PaginaActual,
+                    categoriaId: selectedCategorias.join(","),
+                    busqueda: '@Model.Busqueda'
+                };
+
+                $.ajax({
+                    url: url,
+                    type: 'GET',
+                    data: data,
+                    success: function (result) {
+                        $('#productosContainer').html(result);
+                    },
+                    error: function (xhr, status, error) {
+                        console.log(error);
+                    }
+                });
+            }
+
+        });
+    </script>
+}

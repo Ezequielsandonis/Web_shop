@@ -1,0 +1,63 @@
+﻿@using System.Security.Claims
+
+<header>
+    <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+        <div class="container-fluid mx-5">
+            <a class="navbar-brand" asp-controller="Home" asp-action="Index">CompraFacil</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+                    aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="navbar-collapse collapse d-sm-inline-flex justify-content-between" id="navbarSupportedContent">
+                <form class="form-inline mx-auto" asp-controller="Home" asp-action="Productos" method="get">
+                    <div class="input-group">
+                        <input class="form-control" type="search" placeholder="Buscar productos" aria-label="Buscar" name="busqueda" />
+                        <button class="btn btn-outline-secondary" type="submit">
+                            <i class="fa-solid fa-magnifying-glass"></i>
+                        </button>
+                    </div>
+                </form>
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" asp-controller="Carrito" asp-action="Index">
+                            <i class="fa-solid fa-cart-shopping"> </i>
+                                <span class="badge badge-pill badge-danger bg-primary">
+                                    @ViewBag.NumeroProductos
+                                </span>
+                        </a>
+                    </li>
+                    @if (User.Identity != null && User.Identity.IsAuthenticated)
+                    {
+                        string nombreUsuario = User.Identity.Name ?? "Desconocido";
+                        string idUsuario = User.FindFirstValue(ClaimTypes.NameIdentifier);
+
+                        <li class="nav-item dropdown">
+                            <a class="nav-link dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
+                                <i class="fa-regular fa-user"> @nombreUsuario</i>
+                            </a>
+                            <ul class="dropdown-menu">
+                                <li><a class="dropdown-item" asp-controller="Perfil" asp-action="Details" asp-route-id="@idUsuario">Perfil</a></li>
+
+                                @if (User.FindFirstValue(ClaimTypes.Role) == "Administrador" || User.FindFirstValue(ClaimTypes.Role) == "Staff")
+                                {
+                                    <li><a class="dropdown-item" asp-controller="Dashboard" asp-action="Index">Dashboard</a></li>
+                                }
+
+                                <li><hr class="dropdown-divider" /></li>
+                                <li><a class="dropdown-item" asp-controller="Account" asp-action="Logout">Cerrar sesión</a></li>
+                            </ul>
+                        </li>
+                    }
+                    else
+                    {
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Account" asp-action="Login">
+                                <i class="fa-regular fa-user"></i>
+                            </a>
+                        </li>
+                    }
+                </ul>
+            </div>
+        </div>
+    </nav>
+</header>

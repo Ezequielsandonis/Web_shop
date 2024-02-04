@@ -1,0 +1,24 @@
+﻿
+@{
+    ViewData["Title"] = "Dashboard";
+}
+
+<div class= "container mt-4">
+    <h1 class="mb-4 ">Biemvenido Al dashboard</h1>
+    <p class="lead "> ENLACE A INDICES A LOS DEMAS CONTROLADORES  </p>
+
+    <div class=" list-group">
+        @*ENLACES A LOS DEMAS CONTROLADORES*@
+
+        <a href="@Url.Action("Index","Banners" )" class=" list-group-item  list-group-item-action">Banners</a>
+        <a href="@Url.Action("Index","Usuarios" )" class=" list-group-item  list-group-item-action">Usuarios</a>
+        <a href="@Url.Action("Index","Roles" )" class=" list-group-item  list-group-item-action">Roles</a>
+        <a href="@Url.Action("Index","Productos" )" class=" list-group-item  list-group-item-action">Productos</a>
+        <a href="@Url.Action("Index","Pedidos" )" class=" list-group-item  list-group-item-action">Pedidos</a>
+        <a href="@Url.Action("Index","Direcciones" )" class=" list-group-item  list-group-item-action">Direcciones</a>
+        <a href="@Url.Action("Index","DetallesPedidos" )" class=" list-group-item  list-group-item-action">DetallesPedidos</a>
+        <a href="@Url.Action("Index","Categorias" )" class=" list-group-item  list-group-item-action">Categorias</a>
+ 
+    </div>
+       
+</div>
